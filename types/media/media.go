@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-// Package media provides an implementation for NDEF Payloads for media
+// Package media provides an implementation of NDEF Payloads for generic media
 // types.
 package media
 

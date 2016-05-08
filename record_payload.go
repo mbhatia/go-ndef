@@ -22,6 +22,7 @@ import (
 	"github.com/hsanjuan/go-ndef/types/ext"
 	"github.com/hsanjuan/go-ndef/types/generic"
 	"github.com/hsanjuan/go-ndef/types/media"
+	"github.com/hsanjuan/go-ndef/types/media/application/vnd.wfa.wsc/wificfg"
 	"github.com/hsanjuan/go-ndef/types/wkt/text"
 	"github.com/hsanjuan/go-ndef/types/wkt/uri"
 )
@@ -56,7 +57,11 @@ func makeRecordPayload(tnf byte, rtype string, payload []byte) RecordPayload {
 			r = new(generic.Payload)
 		}
 	case MediaType:
-		r = media.New(rtype, nil)
+		if rtype == "application/vnd.wfa.wsc" {
+			r = new(wificfg.Payload)
+		} else {
+			r = media.New(rtype, nil)
+		}
 	case NFCForumExternalType:
 		r = ext.New(rtype, nil)
 	case AbsoluteURI:
