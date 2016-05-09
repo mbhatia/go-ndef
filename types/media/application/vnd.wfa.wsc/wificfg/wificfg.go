@@ -15,7 +15,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-// BUG(hector): This implementation does not allow extra/or duplicated fields
+// BUG(hector): Multiple TLVs of the same type (for the ones we handle)
+// will overwrite the value (except for Credentials). i.e. If several APChannel
+// TLVs are included in the token, only the value from the last one is
+// retained as the Payload's APChannel attribute.
 
 // Package wificfg provides an implementation of NDEF Payloads for
 // Wi-Fi Alliance's NFC Configuration Token Records. It is based on the
@@ -73,7 +76,8 @@ const (
 	tVendorExtension          = uint16(0x1049)
 )
 
-// Payload is a wrapper to store a Wi-Fi Configuration Token
+// Payload stores a Wi-Fi Configuration Token NDEF Record Payload.
+// This type implements the RecordPayload interface.
 type Payload struct {
 	Credentials []*Credential
 	RFBand      byte
@@ -86,7 +90,7 @@ type Payload struct {
 // Credential represents a Wi-Fi Configuration Token credential.
 // Each token can have multiple credentials. They define which
 // network to connect to and need at least the SSID, the authentication type,
-// the encryption type and the network key (password)
+// the encryption type and the network key (password).
 type Credential struct {
 	// NetworkIndex int // Deprecated. Will use 1
 	SSID                     string
@@ -112,11 +116,11 @@ type TLV struct {
 }
 
 // New returns a pointer to a wificfg.Payload generated with the given
-// parameters.
+// parameters. This payload contains a single Credential.
 //
 // This set of arguments represents the minimum required set to produce a usable
-// Configuration Token. For more complex uses, initialize the Credential and
-// Payload objects manually.
+// Configuration Token. For more complex uses, initialize the
+// Payload and its Credentials objects manually.
 func New(ssid string, key string, auth uint16, enc uint16) *Payload {
 	cred := &Credential{
 		SSID:               ssid,
@@ -130,8 +134,8 @@ func New(ssid string, key string, auth uint16, enc uint16) *Payload {
 	}
 }
 
-// String returns a string explaining that we are not sure how to print
-// this type.
+// String returns a human readable output for this payload, including
+// each of the credentials in it.
 func (wificfg *Payload) String() string {
 	str := "configuration-token\n\n"
 
@@ -157,6 +161,7 @@ func (wificfg *Payload) String() string {
 	return str
 }
 
+// String returns a human readable output of a Credential.
 func (cred *Credential) String() string {
 	str := ""
 	str += fmt.Sprintf("SSID: %s\n", cred.SSID)
@@ -227,6 +232,7 @@ func (tlv *TLV) unmarshal(buf []byte) (rLen int, err error) {
 	return n + 4, nil
 }
 
+// String provides a human-readable output for a TLV.
 func (tlv *TLV) String() string {
 	return fmt.Sprintf("T: %04x. L: %d. V: % 02x", tlv.T, tlv.L, tlv.V)
 }
