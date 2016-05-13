@@ -39,7 +39,7 @@ const (
 	AuthWPAEnterprise   = uint16(1) << 3
 	AuthWPA2Enterprise  = uint16(1) << 4
 	AuthWPA2Personal    = uint16(1) << 5
-	AuthWPAWPA2Personal = AuthWPAPersonal & AuthWPA2Personal
+	AuthWPAWPA2Personal = AuthWPAPersonal | AuthWPA2Personal
 )
 
 // Encryption types
@@ -48,7 +48,7 @@ const (
 	EncWEP     = uint16(1) << 2
 	EncTKIP    = uint16(1) << 3
 	EncAES     = uint16(1) << 4
-	EncAESTKIP = EncTKIP & EncAES
+	EncAESTKIP = EncTKIP | EncAES
 )
 
 // RF Bands
@@ -224,7 +224,7 @@ func (tlv *TLV) unmarshal(buf []byte) (rLen int, err error) {
 	}
 	t := bytesToUint16([2]byte{t1, t2})
 	l := bytesToUint16([2]byte{l1, l2})
-	v := make([]byte, int(l), int(l))
+	v := make([]byte, l, l)
 	n, _ := bytesBuf.Read(v)
 	tlv.T = t
 	tlv.L = l
@@ -360,9 +360,12 @@ func (cred *Credential) unmarshal(buf []byte) {
 func (wificfg *Payload) Marshal() []byte {
 	var buf bytes.Buffer
 	// Credentials
-	for _, cr := range wificfg.Credentials {
-		crBytes := cr.marshal()
-		buf.Write(crBytes)
+	if len(wificfg.Credentials) > 0 {
+		for _, cr := range wificfg.Credentials {
+			crBytes := cr.marshal()
+			tlv := &TLV{tCredential, uint16(len(crBytes)), crBytes}
+			buf.Write(tlv.marshal())
+		}
 	}
 	// RFBand
 	if wificfg.RFBand != 0 {
@@ -372,7 +375,7 @@ func (wificfg *Payload) Marshal() []byte {
 	// AP channel
 	if wificfg.APChannel != 0 {
 		ch := uint16ToBytes(wificfg.APChannel)
-		tlv := &TLV{tRFBands, 2, ch[:]}
+		tlv := &TLV{tAPChannel, 2, ch[:]}
 		buf.Write(tlv.marshal())
 	}
 
