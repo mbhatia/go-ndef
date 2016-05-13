@@ -25,6 +25,7 @@ import (
 	"github.com/hsanjuan/go-ndef/types/absoluteuri"
 	"github.com/hsanjuan/go-ndef/types/ext"
 	"github.com/hsanjuan/go-ndef/types/media"
+	"github.com/hsanjuan/go-ndef/types/media/application/vnd.wfa.wsc/wificfg"
 	"github.com/hsanjuan/go-ndef/types/wkt/text"
 	"github.com/hsanjuan/go-ndef/types/wkt/uri"
 )
@@ -108,6 +109,20 @@ func NewExternalRecord(extType string, payload []byte) *Record {
 	}
 }
 
+// NewWifiCfgRecord returns a pointer to a Record with a
+// Payload containing a Wi-Fi Alliance NFC configuration Token.
+//
+// The wificfg module offers shorhand constants with the valid values
+// for auth and for encryption.
+func NewWifiCfgRecord(ssid string, key string, auth uint16, encryption uint16) *Record {
+	pl := wificfg.New(ssid, key, auth, encryption)
+	return &Record{
+		TNF:     MediaType,
+		Type:    pl.Type(),
+		Payload: pl,
+	}
+}
+
 // String a string representation of the payload of the record, prefixed
 // by the URN of the resource.
 //
@@ -116,7 +131,10 @@ func NewExternalRecord(extType string, payload []byte) *Record {
 // used and an explanatory message is returned instead.
 // See submodules under "types/" for a list of supported types.
 func (r *Record) String() string {
-	return r.Payload.Type() + ":" + r.Payload.String()
+	if r.Payload != nil {
+		return r.Payload.Type() + ":" + r.Payload.String()
+	}
+	return "Empty record"
 }
 
 // Inspect provides a string with information about this record.

@@ -121,12 +121,12 @@ type TLV struct {
 // This set of arguments represents the minimum required set to produce a usable
 // Configuration Token. For more complex uses, initialize the
 // Payload and its Credentials objects manually.
-func New(ssid string, key string, auth uint16, enc uint16) *Payload {
+func New(ssid string, key string, auth uint16, encryption uint16) *Payload {
 	cred := &Credential{
 		SSID:               ssid,
 		NetworkKey:         key,
 		AuthenticationType: auth,
-		EncryptionType:     enc,
+		EncryptionType:     encryption,
 	}
 	return &Payload{
 		Credentials: []*Credential{cred},

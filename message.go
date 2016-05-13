@@ -94,6 +94,17 @@ func NewExternalMessage(extType string, payload []byte) *Message {
 	}
 }
 
+// NewWifiCfgRecord returns a pointer to a Message with a
+// single Record containing a Wi-Fi Alliance NFC configuration Token.
+//
+// The wificfg module offers shorhand constants with the valid values
+// for auth and for encryption.
+func NewWifiCfgMessage(ssid string, key string, auth uint16, encryption uint16) *Message {
+	return &Message{
+		[]*Record{NewWifiCfgRecord(ssid, key, auth, encryption)},
+	}
+}
+
 // Reset clears the fields of a Message and puts them to their default values.
 func (m *Message) Reset() {
 	m.Records = []*Record{}

@@ -21,6 +21,8 @@ import (
 	"bytes"
 	"fmt"
 	"testing"
+
+	"github.com/hsanjuan/go-ndef/types/media/application/vnd.wfa.wsc/wificfg"
 )
 
 func ExampleMessage() {
@@ -69,6 +71,9 @@ func TestTypes(t *testing.T) {
 	t.Log(ndefMessage)
 
 	ndefMessage = NewExternalMessage("exttype", []byte("payload"))
+	t.Log(ndefMessage)
+
+	ndefMessage = NewWifiCfgMessage("ssid", "pass", wificfg.AuthOpen, wificfg.EncNone)
 	t.Log(ndefMessage)
 }
 
