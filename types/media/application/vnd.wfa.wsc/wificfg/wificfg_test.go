@@ -35,6 +35,8 @@ var testPayload = &Payload{
 			KeyProvidedAutomatically: true,
 			Enabled802_1X:            true,
 			NetworkKeyShareable:      true,
+			EAPType:                  []byte("type1"),
+			EAPIdentity:              "eapidentity",
 			ExtraAttrs: []*TLV{
 				&TLV{
 					T: tVendorExtension,
@@ -46,7 +48,7 @@ var testPayload = &Payload{
 	},
 	RFBand:     RF5_0Ghz,
 	APChannel:  5,
-	MACAddress: [6]byte{0, 0, 0, 0, 0, 0},
+	MACAddress: [6]byte{2, 3, 3, 4, 5, 6},
 	Version2:   0x20,
 	ExtraAttrs: []*TLV{
 		&TLV{
@@ -77,7 +79,7 @@ func TestNew(t *testing.T) {
 func TestString(t *testing.T) {
 	t.Log(testPayload.Type() + ":" + testPayload.String())
 	str := ""
-	for _, t := range []byte{0, RF2_4Ghz, RF5_0Ghz, 99} {
+	for _, t := range []byte{0, RF2_4Ghz, RF5_0Ghz, RF60Ghz, 99} {
 		str += fmt.Sprintf("%d-%s ", t, _RFBandString(t))
 	}
 	t.Logf("Available RFBands: %s\n", str)

@@ -233,9 +233,9 @@ func (tlv *TLV) unmarshal(buf []byte) (rLen int, err error) {
 }
 
 // String provides a human-readable output for a TLV.
-func (tlv *TLV) String() string {
-	return fmt.Sprintf("T: %04x. L: %d. V: % 02x", tlv.T, tlv.L, tlv.V)
-}
+// func (tlv *TLV) String() string {
+// 	return fmt.Sprintf("T: %04x. L: %d. V: % 02x", tlv.T, tlv.L, tlv.V)
+// }
 
 func (cred *Credential) marshal() []byte {
 	var buf bytes.Buffer
