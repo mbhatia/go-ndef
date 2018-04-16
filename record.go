@@ -29,6 +29,11 @@ import (
 	"github.com/hsanjuan/go-ndef/types/wkt/uri"
 )
 
+const MaxUint = ^uint(0) 
+const MinUint = 0 
+const MaxInt = int(MaxUint >> 1) 
+const MinInt = -MaxInt - 1
+
 // Record represents a consolidated NDEF Record (assembled, non-chunked),
 // which is a part of an NDEF Message.
 type Record struct {
@@ -200,10 +205,11 @@ func (r *Record) Marshal() ([]byte, error) {
 	tempChunk.ID = r.ID
 
 	rPayload := r.Payload.Marshal()
-	payloadLen := len(rPayload)
+	var payloadLen uint64 = uint64(len(rPayload))
 
-	if payloadLen > 4294967295 { //2^32-1. 4GB message max.
-		payloadLen = 4294967295
+	const max uint64 = 4294967295
+	if payloadLen > max { //2^32-1. 4GB message max.
+		payloadLen = max
 	}
 	tempChunk.SR = payloadLen < 256 // Short record vs. Long
 	tempChunk.PayloadLength = uint64(payloadLen)
